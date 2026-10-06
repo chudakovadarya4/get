@@ -1,0 +1,22 @@
+from gpiozero import PWMOutputDevice
+from time import sleep
+
+# GPIO 12, частота 500 Гц
+dac = PWMOutputDevice(12, frequency=500)
+dynamic_range = 3.3  # Замените на точное измерение с пина (например, 3.27)
+
+try:
+    while True:
+        try:
+            voltage = float(input("Введите напряжение в Вольтах: "))
+            if 0.0 <= voltage <= dynamic_range:
+                # В gpiozero уровень задается от 0.0 до 1.0
+                dac.value = voltage / dynamic_range
+                print(f"Установлено: {voltage:.2f} В")
+            else:
+                print(f"Напряжение выходит за диапазон (0.00 - {dynamic_range:.2f} В)")
+                dac.value = 0
+        except ValueError:
+            print("Вы ввели не число. Попробуйте ещё раз\n")
+except KeyboardInterrupt:
+    dac.off()
